@@ -76,6 +76,9 @@ namespace Assets
 
         private string _userID;
         private string _authToken;
+        private UserData _userData;
+        private const int GRID_SIZE_X = 20;
+        private const int GRID_SIZE_Z = 20;
 
         void Start()
         {
@@ -164,22 +167,7 @@ namespace Assets
 //
 //            Debug.Log(userData);
 //
-            for (int x = 0; x < 15; x = x + 3)
-            {
-                for (int z = 0; z < 15; z = z + 3)
-                {
-                    GameObject obj = GetTileByCode(UpgradeTile(_emptyTile, 50).Code);
-                    float angleToRotate = GetRandomAngle();
-                    Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
-
-                    // Transform to account for movement
-                    int newX = angleToRotate == 270 || angleToRotate == 180 ? x - 3 : x;
-                    int newZ = angleToRotate == 90f || angleToRotate == 180f ? z - 3 : z;
-
-                    // Create obj
-                    Instantiate(obj, new Vector3(newX, 0, newZ), q);
-                }
-            }
+          
         }
 
         IEnumerator GetUserData()
@@ -191,8 +179,33 @@ namespace Assets
             yield return www.Send();
 
             Debug.Log(www.downloadHandler.text);
+            _userData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
+            CreateSimModel();
         }
-        
+
+        private void CreateSimModel()
+        {
+            if (_userData.SimValues == null || _userData.SimValues.Count == 0)
+            {
+                for (int x = 0; x < GRID_SIZE_X; x = x + 3)
+                {
+                    for (int z = 0; z < GRID_SIZE_Z; z = z + 3)
+                    {
+                        GameObject obj = GetTileByCode(UpgradeTile(_emptyTile, 50).Code);
+                        float angleToRotate = GetRandomAngle();
+                        Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
+
+                        // Transform to account for movement
+                        int newX = angleToRotate == 270 || angleToRotate == 180 ? x - 3 : x;
+                        int newZ = angleToRotate == 90f || angleToRotate == 180f ? z - 3 : z;
+
+                        // Create obj
+                        Instantiate(obj, new Vector3(newX, 0, newZ), q);
+                    }
+                }
+            }
+        }
+
 
         // Update is called once per frame
         void Update()
@@ -202,7 +215,6 @@ namespace Assets
 
 
     // Models
-
     public class UserData
     {
         public int ID { get; set; }
