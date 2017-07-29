@@ -19,6 +19,59 @@ namespace Assets
         public GameObject Tile4;
         public GameObject Tile5;
         public GameObject Tile6;
+
+        private static Tile _emptyTile = new Tile(
+            0,
+            0,
+            0,
+            "empty",
+            "empty"
+        );
+        private static Tile _tile1Descriptor = new Tile(
+            1,
+            10,
+            10,
+            "forest",
+            "small_stone_with_shrubs"
+        );
+        private static Tile _tile2Descriptor = new Tile(
+            2,
+            10,
+            15,
+            "forest",
+            "two_trees"
+        );
+        private static Tile _tile3Descriptor = new Tile(
+            3,
+            15,
+            15,
+            "forest",
+            "tree_with_shrooms"
+        );
+        private static Tile _tile4Descriptor = new Tile(
+            4,
+            20,
+            25,
+            "forest",
+            "three_trees"
+        );
+        private static Tile _tile5Descriptor = new Tile(
+            5,
+            25,
+            40,
+            "forest",
+            "large_rock_with_trees"
+        );
+        private static Tile _tile6Descriptor = new Tile(
+            6,
+            20,
+            30,
+            "forest",
+            "trees_and_stump"
+        );
+
+        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor });
+
         readonly Random _rand = new Random();
 
         private string _userID;
@@ -27,6 +80,34 @@ namespace Assets
         void Start()
         {
             
+        }
+
+        private GameObject GetTileByCode(int code)
+        {
+            switch (code)
+            {
+                case 1:
+                    return Tile1;
+                case 2:
+                    return Tile2;
+                case 3:
+                    return Tile3;
+                case 4:
+                    return Tile4;
+                case 5:
+                    return Tile5;
+                case 6:
+                    return Tile6;
+                default:
+                    return Tile1;
+            }
+        }
+
+        private Tile UpgradeTile(Tile tile, int gold)
+        {
+            // TODO Add prediliction for tiles of same type
+            List<Tile> _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold);
+            return _upgrades.Count > 0 ? _upgrades[_rand.Next(0, _upgrades.Count-1)] : tile;
         }
 
         private GameObject GetRandomTile()
@@ -79,7 +160,7 @@ namespace Assets
             {
                 for (int z = 0; z < 15; z = z + 3)
                 {
-                    GameObject obj = GetRandomTile();
+                    GameObject obj = GetTileByCode(UpgradeTile(_emptyTile, 50).Code);
                     float angleToRotate = GetRandomAngle();
                     Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
 
@@ -174,6 +255,13 @@ namespace Assets
         public string Type { get; set; }
         public string Label { get; set; }
 
-        public Tile() { }
+        public Tile(int code, int cost, int value, string type, string label)
+        {
+            Code = code;
+            Cost = cost;
+            Value = value;
+            Type = type;
+            Label = label;
+        }
     }
 }
