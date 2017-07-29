@@ -111,10 +111,63 @@ namespace Assets
             }
         }
 
+        public void UpdateSim()
+        {
+            int spendable = _userData.Gold - _userData.GoldSpent;
+            while (spendable > 15)
+            {
+                SimulationValue simValue = ChooseSimValue();
+                _userData.GoldSpent -= simValue.Tile.Cost; // 'Sell' previous tile
+                simValue.Tile = UpgradeTile(simValue.Tile, spendable);
+                _userData.GoldSpent += simValue.Tile.Cost; // 'Buy' new tile
+                
+                // TODO replace previous tile in webapp
+
+                spendable = _userData.Gold - _userData.GoldSpent;
+            }
+        }
+
+        private SimulationValue ChooseSimValue()
+        {
+            int randX = generateNormalRand(GRID_SIZE_X, 0, GRID_SIZE_X/5);
+            int randY = generateNormalRand(GRID_SIZE_Z, 0, GRID_SIZE_Z / 5);
+            return _userData.SimValues.Find(s => s.XPos == randX && s.YPos == randY); // Needs to update to handle multi-size tiles
+        }
+
+        /// <summary>
+        /// Rolls a number from 0 to max following a normal distribution with specified sigma.  Median is max / 2 + diff.
+        /// </summary>
+        /// <remarks>
+        /// Appropriate sigma:
+        /// max / 20 for steep median, few outlying rolls.
+        /// max / 10 for frequent central rolls, some outlying rolls.
+        /// max / 5 for good number of all rolls.  Central rolls still more common.
+        /// max / 4 maximum recommended, max / 20 minimum.
+        /// </remarks>
+        /// <returns> A number following a normal distribution. </returns>
+        private int generateNormalRand(int max, double medianDiff, double sigma)
+        {
+            double median = (max / 2) + medianDiff;
+
+            double cauchyRand = median + sigma * Math.Tan(Math.PI * (_rand.NextDouble() - 0.5));
+            cauchyRand = cauchyRand > max+1 ? max + 1 : cauchyRand < -1 ? -1 : cauchyRand;
+            int rand = (int)Math.Round(cauchyRand);
+
+            return (rand <= max && rand >= 0) ? rand : generateNormalRand(max, median, sigma);
+        }
+
         private Tile UpgradeTile(Tile tile, int gold)
         {
-            // TODO Add prediliction for tiles of same type
-            List<Tile> _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold);
+            List<Tile> _upgrades;
+            if (_rand.Next(1, 4) < 4)
+            {
+                _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold && t.Type.Equals(tile.Type));
+            }
+            else
+            {
+                _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold);
+            }
+
             return _upgrades.Count > 0 ? _upgrades[_rand.Next(0, _upgrades.Count-1)] : tile;
         }
 
@@ -202,7 +255,6 @@ namespace Assets
             }
         }
 
-
         // Update is called once per frame
         void Update()
         {
@@ -218,7 +270,7 @@ namespace Assets
         public int Gold { get; set; }
         public int GoldSpent { get; set; }
         public string SerializeStorage { get; set; }
-        public virtual ICollection<SimulationValue> SimValues { get; set; }
+        public virtual List<SimulationValue> SimValues { get; set; }
 
         public UserData() { }
 
