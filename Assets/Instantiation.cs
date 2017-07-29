@@ -118,28 +118,6 @@ namespace Assets
             return _upgrades.Count > 0 ? _upgrades[_rand.Next(0, _upgrades.Count-1)] : tile;
         }
 
-        private GameObject GetRandomTile()
-        {
-            int tile = _rand.Next(1, 7);
-            switch (tile)
-            {
-                case 1:
-                    return Tile1;
-                case 2:
-                    return Tile2;
-                case 3:
-                    return Tile3;
-                case 4:
-                    return Tile4;
-                case 5:
-                    return Tile5;
-                case 6:
-                    return Tile6;
-                default:
-                    return Tile1;
-            }
-        }
-
         private float GetRandomAngle()
         {
             int angle = _rand.Next(0, 4);
@@ -169,6 +147,17 @@ namespace Assets
             CreateSimModel();
         }
 
+        IEnumerator PutUserData()
+        {
+            UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/" + _userID, JsonUtility.ToJson(_userData));
+            www.SetRequestHeader("Authorization", "Bearer " + _authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            yield return www.Send();
+
+            Debug.Log(www.downloadHandler.text);
+        }
+
         private void CreateSimModel()
         {
             if (_userData.SimValues == null || _userData.SimValues.Count == 0)
@@ -193,14 +182,13 @@ namespace Assets
                         _userData.SimValues.Add(simValue);
                     }
                 }
-                // TODO PUT updated userdata
+                PutUserData();
             }
             else
             {
                 foreach(SimulationValue simValue in _userData.SimValues)
                 {
                     GameObject obj = GetTileByCode(simValue.Tile.Code);
-                    float angleToRotate = GetRandomAngle();
                     Quaternion q = Quaternion.AngleAxis(float.Parse(simValue.Rotation), Vector3.up);
                     
                     // Create obj
