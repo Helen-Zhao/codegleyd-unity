@@ -79,7 +79,12 @@ namespace Assets
 
         void Start()
         {
-            
+//            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
+//            this._authToken =
+//                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAxMDM5NDY3LjAsImlhdCI6MTUwMTAzOTQ2Ny4wLCJleHAiOjE1MDE2NDQyNjcuMH0.ylv4AVNzjepj1cSVkAJQce5RoMwCxLGAU63C_UFEbkI";
+//            Debug.Log("store user id");
+//            StoreUserID(_userID + "|" + _authToken);
+
         }
 
         private GameObject GetTileByCode(int code)
@@ -144,20 +149,21 @@ namespace Assets
        
             this._userID = split[0];
             this._authToken = split[1];
-            var userData = GetUserData();
 
-            if (userData.SimValues == null)
-            {
-                
-            }
-
-            /**
-             * Example user data
-             * 
-             */
-
-            Console.WriteLine(userData);
-
+            StartCoroutine("GetUserData");
+//
+//            if (userData.SimValues == null)
+//            {
+//                
+//            }
+//
+//            /**
+//             * Example user data
+//             * 
+//             */
+//
+//            Debug.Log(userData);
+//
             for (int x = 0; x < 15; x = x + 3)
             {
                 for (int z = 0; z < 15; z = z + 3)
@@ -175,36 +181,18 @@ namespace Assets
                 }
             }
         }
-        
-        private UserData GetUserData()
-        {
-            IEnumerable userData = SendHttpRequest();
-            Console.WriteLine(userData);
-            Debug.Log(userData);
-            return null;
-        }
 
-        private IEnumerable SendHttpRequest()
+        IEnumerator GetUserData()
         {
-            //http request
             UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/api/userdata/" + _userID);
             www.SetRequestHeader("Authorization", "Bearer " + _authToken);
             www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
             yield return www.Send();
-            if (www.isNetworkError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                // Show results as text
-                Debug.Log(www.downloadHandler.text);
-                JsonUtility.FromJson<UserData>(www.downloadHandler.text);
 
-                // Or retrieve results as binary data
-                //                byte[] results = www.downloadHandler.data;
-            }
+            Debug.Log(www.downloadHandler.text);
         }
+        
 
         // Update is called once per frame
         void Update()
