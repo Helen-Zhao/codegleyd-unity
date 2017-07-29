@@ -57,10 +57,12 @@ namespace Assets
             return angle * 90f;
         }
 
-        void StoreUserID(string userID, string authToken)
+        public void StoreUserID(string userIDAuthToken)
         {
-            this._userID = userID;
-            this._authToken = authToken;
+            string[] split = userIDAuthToken.Split('|');
+       
+            this._userID = split[0];
+            this._authToken = split[1];
             var userData = GetUserData();
 
             if (userData.SimValues == null)
