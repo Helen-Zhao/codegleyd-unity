@@ -173,6 +173,11 @@ namespace Assets
         {
             if (_userData.SimValues == null || _userData.SimValues.Count == 0)
             {
+                if (_userData.SimValues == null)
+                {
+                    _userData.SimValues = new List<SimulationValue>();
+                }
+
                 for (int x = 0; x < GRID_SIZE_X; x = x + 3)
                 {
                     for (int z = 0; z < GRID_SIZE_Z; z = z + 3)
