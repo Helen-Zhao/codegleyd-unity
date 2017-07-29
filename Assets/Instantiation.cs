@@ -154,20 +154,6 @@ namespace Assets
             this._authToken = split[1];
 
             StartCoroutine("GetUserData");
-//
-//            if (userData.SimValues == null)
-//            {
-//                
-//            }
-//
-//            /**
-//             * Example user data
-//             * 
-//             */
-//
-//            Debug.Log(userData);
-//
-          
         }
 
         IEnumerator GetUserData()
@@ -191,7 +177,8 @@ namespace Assets
                 {
                     for (int z = 0; z < GRID_SIZE_Z; z = z + 3)
                     {
-                        GameObject obj = GetTileByCode(UpgradeTile(_emptyTile, 50).Code);
+                        Tile tile = UpgradeTile(_emptyTile, 50);
+                        GameObject obj = GetTileByCode(tile.Code);
                         float angleToRotate = GetRandomAngle();
                         Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
 
@@ -201,7 +188,23 @@ namespace Assets
 
                         // Create obj
                         Instantiate(obj, new Vector3(newX, 0, newZ), q);
+
+                        SimulationValue simValue = new SimulationValue(newX, newZ, angleToRotate.ToString(), tile);
+                        _userData.SimValues.Add(simValue);
                     }
+                }
+                // TODO PUT updated userdata
+            }
+            else
+            {
+                foreach(SimulationValue simValue in _userData.SimValues)
+                {
+                    GameObject obj = GetTileByCode(simValue.Tile.Code);
+                    float angleToRotate = GetRandomAngle();
+                    Quaternion q = Quaternion.AngleAxis(float.Parse(simValue.Rotation), Vector3.up);
+                    
+                    // Create obj
+                    Instantiate(obj, new Vector3(simValue.XPos, 0, simValue.YPos), q);
                 }
             }
         }
@@ -245,7 +248,13 @@ namespace Assets
 
         public int UserDataID { get; set; }
 
-        public SimulationValue() { }
+        public SimulationValue(int x, int y, string r, Tile tile)
+        {
+            XPos = x;
+            YPos = y;
+            Rotation = r;
+            Tile = tile;
+        }
     }
 
     public class Tile
