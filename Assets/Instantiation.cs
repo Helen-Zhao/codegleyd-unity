@@ -187,7 +187,7 @@ namespace Assets
                         _userData.SimValues.Add(simValue);
                     }
                 }
-                PutUserData();
+                StartCoroutine("PutUserData");
             }
             else
             {
