@@ -113,25 +113,25 @@ namespace Assets
 
         public void UpdateSim()
         {
-            int spendable = _userData.Gold - _userData.GoldSpent;
+            int spendable = _userData.gold - _userData.goldSpent;
             while (spendable > 15)
             {
                 SimulationValue simValue = ChooseSimValue();
-                _userData.GoldSpent -= simValue.Tile.Cost; // 'Sell' previous tile
-                simValue.Tile = UpgradeTile(simValue.Tile, spendable);
-                _userData.GoldSpent += simValue.Tile.Cost; // 'Buy' new tile
+                _userData.goldSpent -= simValue.tile.cost; // 'Sell' previous tile
+                simValue.tile = UpgradeTile(simValue.tile, spendable);
+                _userData.goldSpent += simValue.tile.cost; // 'Buy' new tile
                 
                 // TODO replace previous tile in webapp
 
-                spendable = _userData.Gold - _userData.GoldSpent;
+                spendable = _userData.gold - _userData.goldSpent;
             }
         }
 
         private SimulationValue ChooseSimValue()
         {
-            int randX = generateNormalRand(GRID_SIZE_X, 0, GRID_SIZE_X/5);
-            int randY = generateNormalRand(GRID_SIZE_Z, 0, GRID_SIZE_Z / 5);
-            return _userData.SimValues.Find(s => s.XPos == randX && s.YPos == randY); // Needs to update to handle multi-size tiles
+            int randX = GenerateNormalRand(GRID_SIZE_X, 0, GRID_SIZE_X/5);
+            int randY = GenerateNormalRand(GRID_SIZE_Z, 0, GRID_SIZE_Z / 5);
+            return _userData.simValues.Find(s => s.xPos == randX && s.yPos == randY); // Needs to update to handle multi-size tiles
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Assets
         /// max / 4 maximum recommended, max / 20 minimum.
         /// </remarks>
         /// <returns> A number following a normal distribution. </returns>
-        private int generateNormalRand(int max, double medianDiff, double sigma)
+        private int GenerateNormalRand(int max, double medianDiff, double sigma)
         {
             double median = (max / 2) + medianDiff;
 
@@ -153,19 +153,19 @@ namespace Assets
             cauchyRand = cauchyRand > max+1 ? max + 1 : cauchyRand < -1 ? -1 : cauchyRand;
             int rand = (int)Math.Round(cauchyRand);
 
-            return (rand <= max && rand >= 0) ? rand : generateNormalRand(max, median, sigma);
+            return (rand <= max && rand >= 0) ? rand : GenerateNormalRand(max, median, sigma);
         }
 
         private Tile UpgradeTile(Tile tile, int gold)
         {
             List<Tile> _upgrades;
-            if (_rand.Next(1, 4) < 4)
+            if (_rand.Next(1, 5) < 4 && tile.type != "empty")
             {
-                _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold && t.Type.Equals(tile.Type));
+                _upgrades = _tiles.FindAll(t => t.value > tile.value && t.cost <= gold && t.type.Equals(tile.type));
             }
             else
             {
-                _upgrades = _tiles.FindAll(t => t.Value > tile.Value && t.Cost <= gold);
+                _upgrades = _tiles.FindAll(t => t.value > tile.value && t.cost <= gold);
             }
 
             return _upgrades.Count > 0 ? _upgrades[_rand.Next(0, _upgrades.Count-1)] : tile;
@@ -189,13 +189,12 @@ namespace Assets
 
         IEnumerator GetUserData()
         {
-            UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/api/userdata/" + _userID);
+            UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/api/userdata/sim/" + _userID);
             www.SetRequestHeader("Authorization", "Bearer " + _authToken);
             www.SetRequestHeader("Content-Type", "application/json");
             www.downloadHandler = new DownloadHandlerBuffer();
             yield return www.Send();
 
-            Debug.Log(www.downloadHandler.text);
             _userData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
             CreateSimModel();
         }
@@ -207,17 +206,15 @@ namespace Assets
             www.SetRequestHeader("Content-Type", "application/json");
             www.downloadHandler = new DownloadHandlerBuffer();
             yield return www.Send();
-
-            Debug.Log(www.downloadHandler.text);
         }
 
         private void CreateSimModel()
         {
-            if (_userData.SimValues == null || _userData.SimValues.Count == 0)
+            if (_userData.simValues == null || _userData.simValues.Count == 0)
             {
-                if (_userData.SimValues == null)
+                if (_userData.simValues == null)
                 {
-                    _userData.SimValues = new List<SimulationValue>();
+                    _userData.simValues = new List<SimulationValue>();
                 }
 
                 for (int x = 0; x < GRID_SIZE_X; x = x + 3)
@@ -225,7 +222,7 @@ namespace Assets
                     for (int z = 0; z < GRID_SIZE_Z; z = z + 3)
                     {
                         Tile tile = UpgradeTile(_emptyTile, 50);
-                        GameObject obj = GetTileByCode(tile.Code);
+                        GameObject obj = GetTileByCode(tile.code);
                         float angleToRotate = GetRandomAngle();
                         Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
 
@@ -237,20 +234,20 @@ namespace Assets
                         Instantiate(obj, new Vector3(newX, 0, newZ), q);
 
                         SimulationValue simValue = new SimulationValue(newX, newZ, angleToRotate.ToString(), tile);
-                        _userData.SimValues.Add(simValue);
+                        _userData.simValues.Add(simValue);
                     }
                 }
                 StartCoroutine("PutUserData");
             }
             else
             {
-                foreach(SimulationValue simValue in _userData.SimValues)
+                foreach(SimulationValue simValue in _userData.simValues)
                 {
-                    GameObject obj = GetTileByCode(simValue.Tile.Code);
-                    Quaternion q = Quaternion.AngleAxis(float.Parse(simValue.Rotation), Vector3.up);
+                    GameObject obj = GetTileByCode(simValue.tile.code);
+                    Quaternion q = Quaternion.AngleAxis(float.Parse(simValue.rotation), Vector3.up);
                     
                     // Create obj
-                    Instantiate(obj, new Vector3(simValue.XPos, 0, simValue.YPos), q);
+                    Instantiate(obj, new Vector3(simValue.xPos, 0, simValue.yPos), q);
                 }
             }
         }
@@ -263,61 +260,65 @@ namespace Assets
 
 
     // Models
+    [Serializable]
     public class UserData
     {
-        public int ID { get; set; }
-        public string UserId { get; set; }
-        public int Gold { get; set; }
-        public int GoldSpent { get; set; }
-        public string SerializeStorage { get; set; }
-        public virtual List<SimulationValue> SimValues { get; set; }
+        public int id;
+        public string userId;
+        public int gold;
+        public int goldSpent;
+        public string serializeStorage;
+        public List<SimulationValue> simValues;
 
         public UserData() { }
 
         public UserData(string userId)
         {
-            this.Gold = 1;
-            this.GoldSpent = 0;
-            this.SerializeStorage = "";
-            this.SimValues = new List<SimulationValue>();
-            this.UserId = userId;
+            this.gold = 1;
+            this.goldSpent = 0;
+            this.serializeStorage = "";
+            this.simValues = new List<SimulationValue>();
+            this.userId = userId;
         }
     }
+
+    [Serializable]
     public class SimulationValue
     {
-        public int ID { get; set; }
-        public int XPos { get; set; }
-        public int YPos { get; set; }
-        public string Rotation { get; set; }
-        public Tile Tile { get; set; }
+        public int id;
+        public int xPos;
+        public int yPos;
+        public string rotation;
+        public Tile tile;
 
-        public int UserDataID { get; set; }
+        public int userDataID;
 
         public SimulationValue(int x, int y, string r, Tile tile)
         {
-            XPos = x;
-            YPos = y;
-            Rotation = r;
-            Tile = tile;
+            xPos = x;
+            yPos = y;
+            rotation = r;
+            this.tile = tile;
         }
     }
 
+    [Serializable]
     public class Tile
     {
-        public int ID { get; set; }
-        public int Code { get; set; }
-        public int Cost { get; set; }
-        public int Value { get; set; }
-        public string Type { get; set; }
-        public string Label { get; set; }
+        public int id;
+        public int code;
+        public int cost;
+        public int value;
+        public string type;
+        public string label;
 
         public Tile(int code, int cost, int value, string type, string label)
         {
-            Code = code;
-            Cost = cost;
-            Value = value;
-            Type = type;
-            Label = label;
+            this.code = code;
+            this.cost = cost;
+            this.value = value;
+            this.type = type;
+            this.label = label;
         }
     }
 }
