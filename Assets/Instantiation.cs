@@ -77,17 +77,25 @@ namespace Assets
         private string _userID;
         private string _authToken;
         private UserData _userData;
-        private const int GRID_SIZE_X = 20;
-        private const int GRID_SIZE_Z = 20;
+        private const int GRID_SIZE_X = 7;
+        private const int GRID_SIZE_Z = 7;
+        private const int TILE_SIZE = 3;
+        private const int STARTER_TILE_COSTS = 10;
+
+        private const int GOLD_INCREMENT = 1000;
 
         void Start()
         {
-//            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
-//            this._authToken =
-//                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAxMDM5NDY3LjAsImlhdCI6MTUwMTAzOTQ2Ny4wLCJleHAiOjE1MDE2NDQyNjcuMH0.ylv4AVNzjepj1cSVkAJQce5RoMwCxLGAU63C_UFEbkI";
-//            Debug.Log("store user id");
-//            StoreUserID(_userID + "|" + _authToken);
+            this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
+            this._authToken =
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNDkzMTQzLjAsImlhdCI6MTUwMjQ5MzE0My4wLCJleHAiOjE1MDMwOTc5NDMuMH0.yZ5sR8GmquyFQ5yyu0_087Xooo6y2BpdnKaFQHXmnxk";
+            StoreUserID(_userID + "|" + _authToken);
+        }
 
+        public void AddGold(int gold)
+        {
+            _userData.gold += GOLD_INCREMENT;
+            StartCoroutine("PutGold");
         }
 
         private GameObject GetTileByCode(int code)
@@ -111,27 +119,46 @@ namespace Assets
             }
         }
 
-        public void UpdateSim()
+        SimulationValue _simValue;
+        Tile _tile;
+
+        public void UpdateSim(int num)
         {
             int spendable = _userData.gold - _userData.goldSpent;
-            while (spendable > 15)
-            {
-                SimulationValue simValue = ChooseSimValue();
-                _userData.goldSpent -= simValue.tile.cost; // 'Sell' previous tile
-                simValue.tile = UpgradeTile(simValue.tile, spendable);
-                _userData.goldSpent += simValue.tile.cost; // 'Buy' new tile
+            Debug.Log(spendable);
+            if (spendable > 10) {
+                _simValue = ChooseSimValue();
+                _userData.goldSpent -= _simValue.tile.cost; // 'Sell' previous tile
+                _tile = _simValue.tile;
+                _simValue.tile = UpgradeTile(_simValue.tile, spendable);
+                _userData.goldSpent += _simValue.tile.cost; // 'Buy' new tile
                 
-                // TODO replace previous tile in webapp
+                if(_tile.code == _simValue.tile.code) {
+                    if(num >= 9) { 
+                        return;
+                    }
 
-                spendable = _userData.gold - _userData.goldSpent;
+                    UpdateSim(num+1);
+                    return;
+                }
+
+                Debug.Log(JsonUtility.ToJson(_tile));
+                Debug.Log(_simValue.tile.id);
+                Debug.Log(JsonUtility.ToJson(_simValue.tile));
+
+                StartCoroutine("PutUserData");
+
+                InstatiateSimValue(_simValue);
             }
         }
 
         private SimulationValue ChooseSimValue()
         {
-            int randX = GenerateNormalRand(GRID_SIZE_X, 0, GRID_SIZE_X/5);
-            int randY = GenerateNormalRand(GRID_SIZE_Z, 0, GRID_SIZE_Z / 5);
-            return _userData.simValues.Find(s => s.xPos == randX && s.yPos == randY); // Needs to update to handle multi-size tiles
+            int randX = GenerateNormalRand(GRID_SIZE_X, 0, ((double)GRID_SIZE_X)/5);
+            int randZ = GenerateNormalRand(GRID_SIZE_Z, 0, ((double)GRID_SIZE_Z) / 5);
+            int posX = randX * TILE_SIZE;
+            int posZ = randZ * TILE_SIZE;
+            return _userData.simValues.Find(s => s.xPos == posX && s.yPos == posZ); // Needs to update to handle multi-size tiles
         }
 
         /// <summary>
@@ -195,6 +222,8 @@ namespace Assets
             www.downloadHandler = new DownloadHandlerBuffer();
             yield return www.Send();
 
+            Debug.Log(www.downloadHandler.text);
+
             _userData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
             CreateSimModel();
         }
@@ -202,6 +231,15 @@ namespace Assets
         IEnumerator PutUserData()
         {
             UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/" + _userID, JsonUtility.ToJson(_userData));
+            www.SetRequestHeader("Authorization", "Bearer " + _authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            yield return www.Send();
+        }
+
+    IEnumerator PutGold()
+        {
+            UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/gold/" + _userID + "?gold=" + GOLD_INCREMENT, JsonUtility.ToJson(_userData));
             www.SetRequestHeader("Authorization", "Bearer " + _authToken);
             www.SetRequestHeader("Content-Type", "application/json");
             www.downloadHandler = new DownloadHandlerBuffer();
@@ -217,39 +255,43 @@ namespace Assets
                     _userData.simValues = new List<SimulationValue>();
                 }
 
-                for (int x = 0; x < GRID_SIZE_X; x = x + 3)
+                for (int x = 0; x < GRID_SIZE_X * TILE_SIZE; x = x + TILE_SIZE)
                 {
-                    for (int z = 0; z < GRID_SIZE_Z; z = z + 3)
+                    for (int z = 0; z < GRID_SIZE_Z * TILE_SIZE; z = z + TILE_SIZE)
                     {
-                        Tile tile = UpgradeTile(_emptyTile, 50);
-                        GameObject obj = GetTileByCode(tile.code);
+                        Tile tile = UpgradeTile(_emptyTile, STARTER_TILE_COSTS);
                         float angleToRotate = GetRandomAngle();
-                        Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
-
-                        // Transform to account for movement
-                        int newX = angleToRotate == 270 || angleToRotate == 180 ? x - 3 : x;
-                        int newZ = angleToRotate == 90f || angleToRotate == 180f ? z - 3 : z;
-
-                        // Create obj
-                        Instantiate(obj, new Vector3(newX, 0, newZ), q);
-
-                        SimulationValue simValue = new SimulationValue(newX, newZ, angleToRotate.ToString(), tile);
+                        
+                        SimulationValue simValue = new SimulationValue(x, z, angleToRotate.ToString(), tile);
                         _userData.simValues.Add(simValue);
+
+                        InstatiateSimValue(simValue);
                     }
                 }
+                Debug.Log(JsonUtility.ToJson(_userData));
                 StartCoroutine("PutUserData");
             }
             else
             {
                 foreach(SimulationValue simValue in _userData.simValues)
                 {
-                    GameObject obj = GetTileByCode(simValue.tile.code);
-                    Quaternion q = Quaternion.AngleAxis(float.Parse(simValue.rotation), Vector3.up);
-                    
-                    // Create obj
-                    Instantiate(obj, new Vector3(simValue.xPos, 0, simValue.yPos), q);
+                    InstatiateSimValue(simValue);
                 }
             }
+        }
+
+        void InstatiateSimValue(SimulationValue simValue)
+        {
+            GameObject obj = GetTileByCode(simValue.tile.code);
+            float angleToRotate = float.Parse(simValue.rotation);
+            Quaternion q = Quaternion.AngleAxis(angleToRotate, Vector3.up);
+
+            // Transform to account for movement
+            int newX = angleToRotate == 270 || angleToRotate == 180 ? simValue.xPos - TILE_SIZE : simValue.xPos;
+            int newZ = angleToRotate == 90f || angleToRotate == 180f ? simValue.yPos - TILE_SIZE : simValue.yPos;
+
+            // Create obj
+            Instantiate(obj, new Vector3(newX, 0, newZ), q);
         }
 
         // Update is called once per frame
