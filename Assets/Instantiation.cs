@@ -88,6 +88,8 @@ namespace Assets
 //            Debug.Log("store user id");
 //            StoreUserID(_userID + "|" + _authToken);
 
+            Application.ExternalCall("my.dashboard.UnityInitDone");
+
         }
 
         private GameObject GetTileByCode(int code)
