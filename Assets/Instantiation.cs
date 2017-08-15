@@ -13,6 +13,7 @@ namespace Assets
         // Use this for initialization
         // C#
 
+        public GameObject Tile0;
         public GameObject Tile1;
         public GameObject Tile2;
         public GameObject Tile3;
@@ -104,6 +105,8 @@ namespace Assets
         {
             switch (code)
             {
+                case 0:
+                    return Tile0;
                 case 1:
                     return Tile1;
                 case 2:
@@ -117,7 +120,7 @@ namespace Assets
                 case 6:
                     return Tile6;
                 default:
-                    return Tile1;
+                    return Tile0;
             }
         }
 
@@ -284,7 +287,7 @@ namespace Assets
                 {
                     for (int z = 0; z < GRID_SIZE_Z * TILE_SIZE; z = z + TILE_SIZE)
                     {
-                        Tile tile = UpgradeTile(_emptyTile, STARTER_TILE_COSTS);
+                        Tile tile = _emptyTile;
                         float angleToRotate = GetRandomAngle();
                         
                         _simValue = new SimulationValue(x, z, angleToRotate.ToString(), tile);

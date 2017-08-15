@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -472,6 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 279c477be025b4f499fa006bdc13c01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Tile0: {fileID: 1663611869002026, guid: 6320c9a8fbab1614cb2cadca4ec98180, type: 2}
   Tile1: {fileID: 1788638555709394, guid: 8e9a3df852c673e4585e088998a46377, type: 2}
   Tile2: {fileID: 1046019440743116, guid: 7ccc8c50e2b3a3e46a1760ccf480ce32, type: 2}
   Tile3: {fileID: 1610308352796522, guid: 43641ff4ff56bd04da6586e2411ae4a1, type: 2}
