@@ -86,9 +86,9 @@ namespace Assets
 
         void Start()
         {
-            this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
+            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
             this._authToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNDkzMTQzLjAsImlhdCI6MTUwMjQ5MzE0My4wLCJleHAiOjE1MDMwOTc5NDMuMH0.yZ5sR8GmquyFQ5yyu0_087Xooo6y2BpdnKaFQHXmnxk";
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNTA0OTY5LjAsImlhdCI6MTUwMjUwNDk2OS4wLCJleHAiOjE1MDMxMDk3NjkuMH0.D_HRG0zxLyCyQb_UxVCCVVbysFJd41lPrzJ5rzjyKlg";
             StoreUserID(_userID + "|" + _authToken);
         }
 
@@ -142,11 +142,16 @@ namespace Assets
                     return;
                 }
 
+
+                Debug.Log("SIMVALUE");
+                Debug.Log(JsonUtility.ToJson(_simValue));
+                Debug.Log("old tile");
                 Debug.Log(JsonUtility.ToJson(_tile));
-                Debug.Log(_simValue.tile.id);
+                Debug.Log("new tile");
                 Debug.Log(JsonUtility.ToJson(_simValue.tile));
 
                 StartCoroutine("PutUserData");
+                StartCoroutine("PutSimValue");
 
                 InstatiateSimValue(_simValue);
             }
@@ -237,7 +242,25 @@ namespace Assets
             yield return www.Send();
         }
 
-    IEnumerator PutGold()
+        IEnumerator InitSimData()
+        {
+            UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/initsim/" + _userID, JsonUtility.ToJson(_userData));
+            www.SetRequestHeader("Authorization", "Bearer " + _authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            yield return www.Send();
+        }
+
+        IEnumerator PutSimValue()
+        {
+            UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/sim", JsonUtility.ToJson(_simValue));
+            www.SetRequestHeader("Authorization", "Bearer " + _authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            yield return www.Send();
+        }
+
+        IEnumerator PutGold()
         {
             UnityWebRequest www = UnityWebRequest.Put("http://localhost:5000/api/userdata/gold/" + _userID + "?gold=" + GOLD_INCREMENT, JsonUtility.ToJson(_userData));
             www.SetRequestHeader("Authorization", "Bearer " + _authToken);
@@ -262,14 +285,14 @@ namespace Assets
                         Tile tile = UpgradeTile(_emptyTile, STARTER_TILE_COSTS);
                         float angleToRotate = GetRandomAngle();
                         
-                        SimulationValue simValue = new SimulationValue(x, z, angleToRotate.ToString(), tile);
-                        _userData.simValues.Add(simValue);
+                        _simValue = new SimulationValue(x, z, angleToRotate.ToString(), tile);
+                        _userData.simValues.Add(_simValue);
 
-                        InstatiateSimValue(simValue);
+                        InstatiateSimValue(_simValue);
                     }
                 }
                 Debug.Log(JsonUtility.ToJson(_userData));
-                StartCoroutine("PutUserData");
+                StartCoroutine("InitSimData");
             }
             else
             {
