@@ -86,10 +86,12 @@ namespace Assets
 
         void Start()
         {
-            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
-            this._authToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNTA0OTY5LjAsImlhdCI6MTUwMjUwNDk2OS4wLCJleHAiOjE1MDMxMDk3NjkuMH0.D_HRG0zxLyCyQb_UxVCCVVbysFJd41lPrzJ5rzjyKlg";
-            StoreUserID(_userID + "|" + _authToken);
+//            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
+//            this._authToken =
+//                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNTA0OTY5LjAsImlhdCI6MTUwMjUwNDk2OS4wLCJleHAiOjE1MDMxMDk3NjkuMH0.D_HRG0zxLyCyQb_UxVCCVVbysFJd41lPrzJ5rzjyKlg";
+//            StoreUserID(_userID + "|" + _authToken);
+
+            Application.ExternalCall("my.dashboard.UnityInitDone");
         }
 
         public void AddGold(int gold)
