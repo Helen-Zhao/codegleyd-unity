@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DragControllerScript : MonoBehaviour {
 
-    public float dragSpeed = 2;
+    public float dragSpeed = 1;
     private Vector3 dragOrigin;
 
     public bool cameraDragging = true;
@@ -21,63 +21,23 @@ public class DragControllerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
+        
 	    Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
 	    float left = Screen.width * 0.2f;
 	    float right = Screen.width - (Screen.width * 0.2f);
 
-	    if (mousePosition.x < left)
+	    if (Input.GetMouseButtonDown(0))
 	    {
-	        cameraDragging = true;
-	    }
-	    else if (mousePosition.x > right)
-	    {
-	        cameraDragging = true;
+	        dragOrigin = Input.mousePosition;
+	        return;
 	    }
 
-	    if (cameraDragging)
-	    {
+	    if (!Input.GetMouseButton(0)) return;
 
-	        if (Input.GetMouseButtonDown(0))
-	        {
-	            dragOrigin = Input.mousePosition;
-	            return;
-	        }
+	    Vector3 pos = Camera.main.ScreenToViewportPoint(dragOrigin - Input.mousePosition);
+	    Vector3 move = new Vector3(pos.x * dragSpeed, 0, pos.y * dragSpeed);
 
-	        if (!Input.GetMouseButton(0)) return;
-
-	        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-	        Vector3 move = new Vector3(pos.x * dragSpeed, 0, pos.y * dragSpeed);
-
-            if (move.x > 0f)
-	        {
-	            if (this.transform.position.x < outerRight)
-	            {
-	                transform.Translate(move, Space.World);
-	            }
-	        }
-	        else
-	        {
-	            if (this.transform.position.x > outerLeft)
-	            {
-	                transform.Translate(move, Space.World);
-	            }
-	        }
-
-            if (move.z > 0f)
-            {
-                if (this.transform.position.z < zLimitIn)
-                {
-                    transform.Translate(move, Space.World);
-                }
-            }
-            else
-            {
-                if (this.transform.position.z > zLimitOut)
-                {
-                    transform.Translate(move, Space.World);
-                }
-            }
-        }
+	    transform.Translate(move);
     }
 }
