@@ -88,9 +88,9 @@ namespace Assets
 
         void Start()
         {
-            this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
+            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
             this._authToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzMTAxMTkzLjAsImlhdCI6MTUwMzEwMTE5My4wLCJleHAiOjE1MDM3MDU5OTMuMH0.ONLgMXITU1p9nwWjJySaZ5A06oHc0yY1HV8mElQ0uuE";
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyODQ1NjE2LjAsImlhdCI6MTUwMjg0NTYxNi4wLCJleHAiOjE1MDM0NTA0MTYuMH0.EFgbrh99Kq-SMwdJnsY49l4Ptld3SutlTmIC09nJQGE";
             StoreUserID(_userID + "|" + _authToken);
 
             //Application.ExternalCall("my.dashboard.UnityInitDone");
