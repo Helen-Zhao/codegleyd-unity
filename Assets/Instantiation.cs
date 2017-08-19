@@ -88,10 +88,10 @@ namespace Assets
 
         void Start()
         {
-//            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
-//            this._authToken =
-//                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyODQ1NjE2LjAsImlhdCI6MTUwMjg0NTYxNi4wLCJleHAiOjE1MDM0NTA0MTYuMH0.EFgbrh99Kq-SMwdJnsY49l4Ptld3SutlTmIC09nJQGE";
-//            StoreUserID(_userID + "|" + _authToken);
+            //this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
+            //this._authToken =
+            //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzMTAxMTkzLjAsImlhdCI6MTUwMzEwMTE5My4wLCJleHAiOjE1MDM3MDU5OTMuMH0.ONLgMXITU1p9nwWjJySaZ5A06oHc0yY1HV8mElQ0uuE";
+            //StoreUserID(_userID + "|" + _authToken);
 
             Application.ExternalCall("my.dashboard.UnityInitDone");
         }
@@ -131,7 +131,6 @@ namespace Assets
         public void UpdateSim(int num)
         {
             int spendable = _userData.gold - _userData.goldSpent;
-            Debug.Log(spendable);
             if (spendable > 10) {
                 _simValue = ChooseSimValue();
                 _userData.goldSpent -= _simValue.tile.cost; // 'Sell' previous tile
@@ -140,21 +139,13 @@ namespace Assets
                 _userData.goldSpent += _simValue.tile.cost; // 'Buy' new tile
                 
                 if(_tile.code == _simValue.tile.code) {
-                    if(num >= 9) { 
+                    if (num >= 4) {
                         return;
                     }
 
                     UpdateSim(num+1);
                     return;
                 }
-
-
-                Debug.Log("SIMVALUE");
-                Debug.Log(JsonUtility.ToJson(_simValue));
-                Debug.Log("old tile");
-                Debug.Log(JsonUtility.ToJson(_tile));
-                Debug.Log("new tile");
-                Debug.Log(JsonUtility.ToJson(_simValue.tile));
 
                 StartCoroutine("PutUserData");
                 StartCoroutine("PutSimValue");
@@ -166,33 +157,16 @@ namespace Assets
 
         private SimulationValue ChooseSimValue()
         {
-            int randX = GenerateNormalRand(GRID_SIZE_X, 0, ((double)GRID_SIZE_X)/5);
-            int randZ = GenerateNormalRand(GRID_SIZE_Z, 0, ((double)GRID_SIZE_Z) / 5);
+            int randX = _rand.Next(0, GRID_SIZE_X);
+            int randZ = _rand.Next(0, GRID_SIZE_Z);
             int posX = randX * TILE_SIZE;
             int posZ = randZ * TILE_SIZE;
-            return _userData.simValues.Find(s => s.xPos == posX && s.yPos == posZ); // Needs to update to handle multi-size tiles
-        }
-
-        /// <summary>
-        /// Rolls a number from 0 to max following a normal distribution with specified sigma.  Median is max / 2 + diff.
-        /// </summary>
-        /// <remarks>
-        /// Appropriate sigma:
-        /// max / 20 for steep median, few outlying rolls.
-        /// max / 10 for frequent central rolls, some outlying rolls.
-        /// max / 5 for good number of all rolls.  Central rolls still more common.
-        /// max / 4 maximum recommended, max / 20 minimum.
-        /// </remarks>
-        /// <returns> A number following a normal distribution. </returns>
-        private int GenerateNormalRand(int max, double medianDiff, double sigma)
-        {
-            double median = (max / 2) + medianDiff;
-
-            double cauchyRand = median + sigma * Math.Tan(Math.PI * (_rand.NextDouble() - 0.5));
-            cauchyRand = cauchyRand > max+1 ? max + 1 : cauchyRand < -1 ? -1 : cauchyRand;
-            int rand = (int)Math.Round(cauchyRand);
-
-            return (rand <= max && rand >= 0) ? rand : GenerateNormalRand(max, median, sigma);
+            SimulationValue simValue = _userData.simValues.Find(s => s.xPos == posX && s.yPos == posZ);
+            if (simValue == null)
+            {
+                return ChooseSimValue();
+            }
+            return simValue;
         }
 
         private Tile UpgradeTile(Tile tile, int gold)
