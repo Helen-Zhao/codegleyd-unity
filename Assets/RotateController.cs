@@ -17,7 +17,7 @@ public class RotateController : MonoBehaviour {
 	void LateUpdate () {
 	    if (Input.GetMouseButton(1))
 	    {
-	        transform.Rotate(new Vector3(Input.GetAxis("Mouse Y") * speed, -Input.GetAxis("Mouse X") * speed, 0));
+	        transform.Rotate(new Vector3(Input.GetAxis("Mouse Y") * speed, -Input.GetAxis("Mouse X") * speed, 0), Space.World);
 	        X = transform.rotation.eulerAngles.x;
 	        Y = transform.rotation.eulerAngles.y;
 	        transform.rotation = Quaternion.Euler(X, Y, 0);
