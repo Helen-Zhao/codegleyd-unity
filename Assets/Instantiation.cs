@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = System.Random;
-using SimpleJson;
 
 namespace Assets
 {
@@ -85,14 +84,16 @@ namespace Assets
 
         private const int GOLD_INCREMENT = 1000;
 
+        private static GameObject[,] _tileObjects = new GameObject[GRID_SIZE_X, GRID_SIZE_Z];
+
         void Start()
         {
-//            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
-//            this._authToken =
-//                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAyNTA0OTY5LjAsImlhdCI6MTUwMjUwNDk2OS4wLCJleHAiOjE1MDMxMDk3NjkuMH0.D_HRG0zxLyCyQb_UxVCCVVbysFJd41lPrzJ5rzjyKlg";
-//            StoreUserID(_userID + "|" + _authToken);
+            this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
+            this._authToken =
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzMTAxMTkzLjAsImlhdCI6MTUwMzEwMTE5My4wLCJleHAiOjE1MDM3MDU5OTMuMH0.ONLgMXITU1p9nwWjJySaZ5A06oHc0yY1HV8mElQ0uuE";
+            StoreUserID(_userID + "|" + _authToken);
 
-            Application.ExternalCall("my.dashboard.UnityInitDone");
+            //Application.ExternalCall("my.dashboard.UnityInitDone");
         }
 
         public void AddGold(int gold)
@@ -158,6 +159,7 @@ namespace Assets
                 StartCoroutine("PutUserData");
                 StartCoroutine("PutSimValue");
 
+                Destroy(_tileObjects[_simValue.xPos / TILE_SIZE, _simValue.yPos / TILE_SIZE]);
                 InstatiateSimValue(_simValue);
             }
         }
@@ -319,7 +321,8 @@ namespace Assets
             int newZ = angleToRotate == 90f || angleToRotate == 180f ? simValue.yPos - TILE_SIZE : simValue.yPos;
 
             // Create obj
-            Instantiate(obj, new Vector3(newX, 0, newZ), q);
+            GameObject tileObj = Instantiate(obj, new Vector3(newX, 0, newZ), q);
+            _tileObjects[simValue.xPos / TILE_SIZE, simValue.yPos / TILE_SIZE] = tileObj;
         }
 
         // Update is called once per frame
