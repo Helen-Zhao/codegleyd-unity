@@ -21,6 +21,8 @@ namespace Assets
         public GameObject Tile4;
         public GameObject Tile5;
         public GameObject Tile6;
+        public GameObject CTile1;
+        public GameObject CTile2;
 
         private static Tile _emptyTile = new Tile(
             0,
@@ -71,8 +73,22 @@ namespace Assets
             "forest",
             "trees_and_stump"
         );
+        private static Tile _ctile1Descriptor = new Tile(
+            7,
+            50,
+            75,
+            "camp",
+            "simple_tent"
+        );
+        private static Tile _ctile2Descriptor = new Tile(
+            8,
+            60,
+            80,
+            "camp",
+            "complex_tent"
+        );
 
-        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor });
+        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor });
 
         readonly Random _rand = new Random();
 
@@ -82,7 +98,7 @@ namespace Assets
         private UserData _viewUserData;
         private const int GRID_SIZE_X = 7;
         private const int GRID_SIZE_Z = 7;
-        private const int TILE_SIZE = 3;
+        private const int TILE_SIZE = 6;
         private const int STARTER_TILE_COSTS = 10;
 
         private const int GOLD_INCREMENT = 1000;
@@ -91,12 +107,12 @@ namespace Assets
 
         void Start()
         {
-            //this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
-            //this._authToken =
-            //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzA2NjkwLjAsImlhdCI6MTUwMzcwNjY5MC4wLCJleHAiOjE1MDQzMTE0OTAuMH0.YHTZwFAMwkWftOK_u0gwOLe8-Y4x0Vu7bcMQCZGdbaE";
-            //StoreUserID(_userID + "|" + _authToken);
+            this._userID = "c9b505cd-00cc-4b6d-850e-e983e7fdd043";
+            this._authToken =
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzE3MjM2LjAsImlhdCI6MTUwMzcxNzIzNi4wLCJleHAiOjE1MDQzMjIwMzYuMH0.bqpMGwZ0Ek8TEa858ovqZYo272GyAtUefyx3XJG7pCc";
+            StoreUserID(_userID + "|" + _authToken);
 
-            Application.ExternalCall("my.dashboard.UnityInitDone");
+            //Application.ExternalCall("my.dashboard.UnityInitDone");
         }
 
         public void AddGold(int gold)
@@ -123,6 +139,10 @@ namespace Assets
                     return Tile5;
                 case 6:
                     return Tile6;
+                case 7:
+                    return CTile1;
+                case 8:
+                    return CTile2;
                 default:
                     return Tile0;
             }
