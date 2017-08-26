@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 using Random = System.Random;
 
@@ -12,6 +13,7 @@ namespace Assets
         // Use this for initialization
         // C#
 
+        public Text DisplayName;
         public GameObject Tile0;
         public GameObject Tile1;
         public GameObject Tile2;
@@ -77,6 +79,7 @@ namespace Assets
         private string _userID;
         private string _authToken;
         private UserData _userData;
+        private UserData _viewUserData;
         private const int GRID_SIZE_X = 7;
         private const int GRID_SIZE_Z = 7;
         private const int TILE_SIZE = 3;
@@ -90,7 +93,7 @@ namespace Assets
         {
             //this._userID = "6aacacf0-efbf-47a1-b8cf-182be549b468";
             //this._authToken =
-            //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzMTAxMTkzLjAsImlhdCI6MTUwMzEwMTE5My4wLCJleHAiOjE1MDM3MDU5OTMuMH0.ONLgMXITU1p9nwWjJySaZ5A06oHc0yY1HV8mElQ0uuE";
+            //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzA2NjkwLjAsImlhdCI6MTUwMzcwNjY5MC4wLCJleHAiOjE1MDQzMTE0OTAuMH0.YHTZwFAMwkWftOK_u0gwOLe8-Y4x0Vu7bcMQCZGdbaE";
             //StoreUserID(_userID + "|" + _authToken);
 
             Application.ExternalCall("my.dashboard.UnityInitDone");
@@ -200,6 +203,25 @@ namespace Assets
             StartCoroutine("GetUserData");
         }
 
+        public void OnNext()
+        {
+            _viewUserData.id++;
+            StartCoroutine("GetUserDataById");
+        }
+
+        public void OnPrev()
+        {
+            _viewUserData.id--;
+            StartCoroutine("GetUserDataById");
+        }
+
+        public void OnHome()
+        {
+            _viewUserData.id = _userData.id;
+            DisplayName.text = _userData.displayName;
+            DisplaySimModel(_userData);
+        }
+
         IEnumerator GetUserData()
         {
             UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/api/userdata/sim/" + _userID);
@@ -209,9 +231,25 @@ namespace Assets
             yield return www.Send();
 
             Debug.Log(www.downloadHandler.text);
-
             _userData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
+
             CreateSimModel();
+            _viewUserData = _userData;
+            DisplayName.text = _viewUserData.displayName;
+        }
+
+        IEnumerator GetUserDataById()
+        {
+            UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/api/userdata/sim/id/" + _viewUserData.id);
+            www.SetRequestHeader("Authorization", "Bearer " + _authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            yield return www.Send();
+
+            Debug.Log(www.downloadHandler.text);
+            _viewUserData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
+            DisplayName.text = _viewUserData.displayName;
+            DisplaySimModel(_viewUserData);
         }
 
         IEnumerator PutUserData()
@@ -284,6 +322,18 @@ namespace Assets
             }
         }
 
+        private void DisplaySimModel(UserData data)
+        {
+            foreach(GameObject obj in _tileObjects)
+            {
+                Destroy(obj);
+            }
+            foreach(SimulationValue simValue in data.simValues)
+            {
+                InstatiateSimValue(simValue);
+            }
+        }
+
         void InstatiateSimValue(SimulationValue simValue)
         {
             GameObject obj = GetTileByCode(simValue.tile.code);
@@ -312,6 +362,7 @@ namespace Assets
     {
         public int id;
         public string userId;
+        public string displayName;
         public int gold;
         public int goldSpent;
         public string serializeStorage;
