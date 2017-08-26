@@ -620,6 +620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 279c477be025b4f499fa006bdc13c01d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DisplayName: {fileID: 111309534}
   Tile0: {fileID: 1663611869002026, guid: 6320c9a8fbab1614cb2cadca4ec98180, type: 2}
   Tile1: {fileID: 1788638555709394, guid: 8e9a3df852c673e4585e088998a46377, type: 2}
   Tile2: {fileID: 1046019440743116, guid: 7ccc8c50e2b3a3e46a1760ccf480ce32, type: 2}
