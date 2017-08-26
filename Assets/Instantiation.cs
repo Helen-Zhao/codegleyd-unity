@@ -23,6 +23,10 @@ namespace Assets
         public GameObject Tile6;
         public GameObject CTile1;
         public GameObject CTile2;
+        public GameObject CTile3;
+        public GameObject CTile4;
+        public GameObject CTile5;
+        public GameObject CTile6;
 
         private static Tile _emptyTile = new Tile(
             0,
@@ -78,17 +82,46 @@ namespace Assets
             50,
             75,
             "camp",
-            "simple_tent"
+            "bench_and_fences"
         );
         private static Tile _ctile2Descriptor = new Tile(
             8,
             60,
             80,
             "camp",
+            "simple_fire"
+        );
+        private static Tile _ctile3Descriptor = new Tile(
+            9,
+            80,
+            100,
+            "camp",
+            "complex_fire"
+        );
+        private static Tile _ctile4Descriptor = new Tile(
+            10,
+            100,
+            120,
+            "camp",
+            "simple_tent"
+        );
+        private static Tile _ctile5Descriptor = new Tile(
+            11,
+            120,
+            140,
+            "camp",
             "complex_tent"
         );
+        private static Tile _ctile6Descriptor = new Tile(
+            12,
+            150,
+            200,
+            "camp",
+            "big_tent"
+        );
 
-        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor });
+
+        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor });
 
         readonly Random _rand = new Random();
 
@@ -101,7 +134,7 @@ namespace Assets
         private const int TILE_SIZE = 6;
         private const int STARTER_TILE_COSTS = 10;
 
-        private const int GOLD_INCREMENT = 1000;
+        private const int GOLD_INCREMENT = 100;
 
         private static GameObject[,] _tileObjects = new GameObject[GRID_SIZE_X, GRID_SIZE_Z];
 
@@ -143,6 +176,14 @@ namespace Assets
                     return CTile1;
                 case 8:
                     return CTile2;
+                case 9:
+                    return CTile3;
+                case 10:
+                    return CTile4;
+                case 11:
+                    return CTile5;
+                case 12:
+                    return CTile6;
                 default:
                     return Tile0;
             }
