@@ -170,9 +170,8 @@ namespace Assets
 
 
         private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor, _ttile1Descriptor, _ttile2Descriptor, _ttile3Descriptor, _ttile4Descriptor, _ttile5Descriptor, _ttile6Descriptor });       
-c
-        readonly Random _rand = new Random();
 
+        readonly Random _rand = new Random();
         private string _userID;
         private string _authToken;
         private UserData _userData;
