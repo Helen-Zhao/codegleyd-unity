@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -633,7 +633,13 @@ MonoBehaviour:
   CTile3: {fileID: 1791437338168342, guid: 32f28ba24f8a65449bf84b46b1c828bd, type: 2}
   CTile4: {fileID: 1813526747577330, guid: b7437ff119d3dc647a45f459c897f3fc, type: 2}
   CTile5: {fileID: 1961454210255198, guid: 2a1927c7563c6354881d2f9c4e05dfdc, type: 2}
-  CTile6: {fileID: 1710899208129480, guid: d16518102c3540440997ceaba7236c75, type: 2}
+  CTile6: {fileID: 1273803347198562, guid: d16518102c3540440997ceaba7236c75, type: 2}
+  TTile1: {fileID: 1778311405202226, guid: ffc9a0cc83f45184195461dbc5bc2372, type: 2}
+  TTile2: {fileID: 1509948907161872, guid: 35465cc2cbe7d294e96382308cf204c6, type: 2}
+  TTile3: {fileID: 1799243609362960, guid: 4534231bda6743b4eaa46e41b17bc622, type: 2}
+  TTile4: {fileID: 1967734970959414, guid: f68cfdfb57ffd684a876759a927d1ea6, type: 2}
+  TTile5: {fileID: 1711193084767466, guid: 4bfdf38405acdc245abc759c429f4f80, type: 2}
+  TTile6: {fileID: 1422161434313296, guid: 2198666d52b7edf459646e33b01d6cd0, type: 2}
 --- !u!4 &1028887717
 Transform:
   m_ObjectHideFlags: 0
