@@ -27,6 +27,12 @@ namespace Assets
         public GameObject CTile4;
         public GameObject CTile5;
         public GameObject CTile6;
+        public GameObject TTile1;
+        public GameObject TTile2;
+        public GameObject TTile3;
+        public GameObject TTile4;
+        public GameObject TTile5;
+        public GameObject TTile6;
 
         private static Tile _emptyTile = new Tile(
             0,
@@ -119,10 +125,52 @@ namespace Assets
             "camp",
             "big_tent"
         );
+        private static Tile _ttile1Descriptor = new Tile(
+            13,
+            80,
+            100,
+            "town",
+            "red_simple_house"
+        );
+        private static Tile _ttile2Descriptor = new Tile(
+            14,
+            90,
+            110,
+            "town",
+            "red_house_with_fence"
+        );
+        private static Tile _ttile3Descriptor = new Tile(
+            15,
+            90,
+            110,
+            "town",
+            "green_house_with_fence"
+        );
+        private static Tile _ttile4Descriptor = new Tile(
+            16,
+            80,
+            100,
+            "town",
+            "green_simple_house"
+        );
+        private static Tile _ttile5Descriptor = new Tile(
+            17,
+            150,
+            200,
+            "town",
+            "large_green_house"
+        );
+        private static Tile _ttile6Descriptor = new Tile(
+            18,
+            150,
+            200,
+            "town",
+            "large_red_house"
+        );
 
 
-        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor });
-
+        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor, _ttile1Descriptor, _ttile2Descriptor, _ttile3Descriptor, _ttile4Descriptor, _ttile5Descriptor, _ttile6Descriptor });       
+c
         readonly Random _rand = new Random();
 
         private string _userID;
@@ -140,9 +188,9 @@ namespace Assets
 
         void Start()
         {
-            this._userID = "c9b505cd-00cc-4b6d-850e-e983e7fdd043";
+            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
             this._authToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzE3MjM2LjAsImlhdCI6MTUwMzcxNzIzNi4wLCJleHAiOjE1MDQzMjIwMzYuMH0.bqpMGwZ0Ek8TEa858ovqZYo272GyAtUefyx3XJG7pCc";
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzA0NDYyLjAsImlhdCI6MTUwMzcwNDQ2Mi4wLCJleHAiOjE1MDQzMDkyNjIuMH0.RUkSomJbByhPKQslz_8mXmPea8cgAlIcwQOccFBBWQE";
             StoreUserID(_userID + "|" + _authToken);
 
             //Application.ExternalCall("my.dashboard.UnityInitDone");
@@ -184,6 +232,18 @@ namespace Assets
                     return CTile5;
                 case 12:
                     return CTile6;
+                case 13:
+                    return TTile1;
+                case 14:
+                    return TTile2;
+                case 15:
+                    return TTile3;
+                case 16:
+                    return TTile4;
+                case 17:
+                    return TTile5;
+                case 18:
+                    return TTile6;
                 default:
                     return Tile0;
             }

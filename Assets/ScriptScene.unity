@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -634,6 +634,7 @@ MonoBehaviour:
   CTile4: {fileID: 1813526747577330, guid: b7437ff119d3dc647a45f459c897f3fc, type: 2}
   CTile5: {fileID: 1961454210255198, guid: 2a1927c7563c6354881d2f9c4e05dfdc, type: 2}
   CTile6: {fileID: 1710899208129480, guid: d16518102c3540440997ceaba7236c75, type: 2}
+  TTile1: {fileID: 1778311405202226, guid: ffc9a0cc83f45184195461dbc5bc2372, type: 2}
 --- !u!4 &1028887717
 Transform:
   m_ObjectHideFlags: 0
