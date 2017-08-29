@@ -194,7 +194,9 @@ namespace Assets
             //this._authToken =
             //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0NUB0ZXN0LmNvbSIsImVtYWlsIjoidGVzdDVAdGVzdC5jb20iLCJpc3MiOiJjb2RlZ2xleWQiLCJhdWQiOiJDb2RlZ2xleWRBUEkiLCJuYmYiOjE1MDM5OTAxMzguMCwiaWF0IjoxNTAzOTkwMTM4LjAsImV4cCI6MTUwNDU5NDkzOC4wfQ.6rYLGVC4jwbB2J4wNHVzzp8PvKiqyueDKxHZ1a-z6vo";
             //StoreUserID(_userID + "|" + _authToken);
-
+            #if !UNITY_EDITOR && UNITY_WEBGL
+              WebGLInput.captureAllKeyboardInput = false;
+            #endif
             Application.ExternalCall("my.dashboard.UnityInitDone");
         }
 
