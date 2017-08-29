@@ -251,6 +251,17 @@ namespace Assets
             }
         }
 
+        public void ExternalUpdate()
+        {
+            for (int i = 0; i < 5; i++) { UpdateSim(0); }
+        }
+
+        public void LoadVillage(int userDataID)
+        {
+            _viewUserData.id = userDataID;
+            StartCoroutine("GetUserDataById");
+        }
+
         SimulationValue _simValue;
         Tile _tile;
 
