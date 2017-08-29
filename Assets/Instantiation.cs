@@ -169,7 +169,10 @@ namespace Assets
         );
 
 
-        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor, _ttile1Descriptor, _ttile2Descriptor, _ttile3Descriptor, _ttile4Descriptor, _ttile5Descriptor, _ttile6Descriptor });       
+        private static List<Tile> _tiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor, _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor, _ttile1Descriptor, _ttile2Descriptor, _ttile3Descriptor, _ttile4Descriptor, _ttile5Descriptor, _ttile6Descriptor });
+        private static List<Tile> _ftiles = new List<Tile>(new Tile[] { _tile1Descriptor, _tile2Descriptor, _tile3Descriptor, _tile4Descriptor, _tile5Descriptor, _tile6Descriptor });
+        private static List<Tile> _ctiles = new List<Tile>(new Tile[] { _ctile1Descriptor, _ctile2Descriptor, _ctile3Descriptor, _ctile4Descriptor, _ctile5Descriptor, _ctile6Descriptor });
+        private static List<Tile> _ttiles = new List<Tile>(new Tile[] { _ttile1Descriptor, _ttile2Descriptor, _ttile3Descriptor, _ttile4Descriptor, _ttile5Descriptor, _ttile6Descriptor });
 
         readonly Random _rand = new Random();
         private string _userID;
@@ -187,12 +190,12 @@ namespace Assets
 
         void Start()
         {
-            this._userID = "8483cccc-4bc7-425c-8e80-302aa59a34ba";
-            this._authToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiaXNzIjoiY29kZWdsZXlkIiwiYXVkIjoiQ29kZWdsZXlkQVBJIiwibmJmIjoxNTAzNzA0NDYyLjAsImlhdCI6MTUwMzcwNDQ2Mi4wLCJleHAiOjE1MDQzMDkyNjIuMH0.RUkSomJbByhPKQslz_8mXmPea8cgAlIcwQOccFBBWQE";
-            StoreUserID(_userID + "|" + _authToken);
+            //this._userID = "48ec8399-fef1-41ab-a8db-ff7d51136d3e";
+            //this._authToken =
+            //    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0NUB0ZXN0LmNvbSIsImVtYWlsIjoidGVzdDVAdGVzdC5jb20iLCJpc3MiOiJjb2RlZ2xleWQiLCJhdWQiOiJDb2RlZ2xleWRBUEkiLCJuYmYiOjE1MDM5OTAxMzguMCwiaWF0IjoxNTAzOTkwMTM4LjAsImV4cCI6MTUwNDU5NDkzOC4wfQ.6rYLGVC4jwbB2J4wNHVzzp8PvKiqyueDKxHZ1a-z6vo";
+            //StoreUserID(_userID + "|" + _authToken);
 
-            //Application.ExternalCall("my.dashboard.UnityInitDone");
+            Application.ExternalCall("my.dashboard.UnityInitDone");
         }
 
         public void AddGold(int gold)
@@ -294,17 +297,29 @@ namespace Assets
 
         private Tile UpgradeTile(Tile tile, int gold)
         {
-            List<Tile> _upgrades;
+            List<Tile> upgrades;
+            List<Tile> possibleUpgrades = new List<Tile>(_ftiles);
+
+            string tilesets = _userData.serializeStorage.Split(new string[] { "q:" }, StringSplitOptions.None)[1];
+            if(tilesets.Contains("camp"))
+            {
+                possibleUpgrades.AddRange(_ctiles);
+            }
+            if (tilesets.Contains("town"))
+            {
+                possibleUpgrades.AddRange(_ttiles);
+            }
+
             if (_rand.Next(1, 5) < 4 && tile.type != "empty")
             {
-                _upgrades = _tiles.FindAll(t => t.value > tile.value && t.cost <= gold && t.type.Equals(tile.type));
+                upgrades = possibleUpgrades.FindAll(t => t.value > tile.value && t.cost <= gold && t.type.Equals(tile.type));
             }
             else
             {
-                _upgrades = _tiles.FindAll(t => t.value > tile.value && t.cost <= gold);
+                upgrades = possibleUpgrades.FindAll(t => t.value > tile.value && t.cost <= gold);
             }
 
-            return _upgrades.Count > 0 ? _upgrades[_rand.Next(0, _upgrades.Count-1)] : tile;
+            return upgrades.Count > 0 ? upgrades[_rand.Next(0, upgrades.Count-1)] : tile;
         }
 
         private float GetRandomAngle()
